@@ -14,8 +14,15 @@ class OpenAIService:
         
 
     def run_thread(self, thread_id, assistant_id):
-        messages = self.client.beta.threads.messages.list(thread_id=thread_id)
-        return messages
+
+        run = self.client.beta.threads.runs.create_and_poll(thread_id=thread_id, assistant_id=assistant_id)
+
+        if run is not None and run.status == "completed":
+            messages = self.client.beta.threads.messages.list(thread_id=thread_id)
+            return messages
+        else:
+            raise 'error in running thread'
+
 
     def interactBot(self, message: str, thread_id: str = None):
         _assistant = self.client.beta.assistants.retrieve("asst_gr55Ttqa0X6WaSOWlTJAItdg")
@@ -32,14 +39,14 @@ class OpenAIService:
         
         if all_messages:
             all_messages = all_messages.to_dict()
-            latest_response = all_messages['date'][0]
+            latest_response = all_messages['data'][0]
             response = latest_response['content'][0]['text']['value']
             response = extract_dict_from_string(response)
 
             if not response:
                 return {"response": {"error": "Failed to parse response from OpenAI"}, "thread_id": thread_id} 
             response['id'] = latest_response['id']
-            response['createdAt'] = latest_response['createdAt']
+            response['createdAt'] = latest_response['created_at']
 
             return {"response": response, "thread_id": thread_id}
         else:

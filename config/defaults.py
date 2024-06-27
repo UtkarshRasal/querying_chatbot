@@ -1,5 +1,8 @@
 class Constants:
     OPEN_AI_SECRET_KEY=''
+    PINECONE_SECRET_KEY=''
+    PINECONE_INDEX = "engineer-embeddings"
+
 
 class AppConfig:
     version: str = '1.0.0'
@@ -10,5 +13,4 @@ class AppConfig:
     # "http://localhost:3000",
     # ]   
     mongo_pass=''
-
 config = AppConfig()
