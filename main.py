@@ -17,8 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/client", StaticFiles(directory="client_frontend", html=True), name="client_frontend")
-
 app.include_router(AuthenticationRouter.router, prefix="/query_chatbot/v1/api/auth")
 app.include_router(MessageRouter.router, prefix="/query_chatbot/v1/api/chat")
 

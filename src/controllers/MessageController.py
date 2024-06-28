@@ -1,12 +1,12 @@
 
 from fastapi import HTTPException, status
 from src.services.OpenAIService import OpenAIService
-# from src.services.EngineerQueryingService import EngineersQuery
+from src.services.EngineerQueryingService import EngineersQuery
 from src.Utils.mongodb_connection import get_mongo_instance
 # from src.Utils.helpers import amplifyQuery
 
 openAI = OpenAIService()
-# engineersQuery = EngineersQuery()
+engineersQuery = EngineersQuery()
 
 class Message:
 
@@ -38,11 +38,11 @@ class Message:
 
             engineersList = []
             # amp_query = amplifyQuery(message, response.get("response", {}).get("keywords", [])) 
-            # engineers = engineersQuery.get_engineers(amp_query, response.get("response", {}), mode=0)
+            engineersList = engineersQuery.get_engineers(message, response.get("response", {}), mode=0)
 
-            # engineerDetails = engineersQuery.get_engineer_details(engineers)
+            engineerDetails = engineersQuery.get_engineer_details(engineersList)
 
-            return { "botResponse": response }
+            return { "botResponse": response, "engineers": engineerDetails }
 
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error in fetching OpenAI response")
