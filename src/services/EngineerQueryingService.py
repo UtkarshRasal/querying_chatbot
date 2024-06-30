@@ -42,8 +42,8 @@ class EngineersQuery:
             print('some error')
 
     def get_engineers(self, query: str, entities: dict = {}, mode: str = QueryModes.BASIC):
-        return self.get_engineers_balanced(query, entities)
-        # return self.get_engineers_basic(query)
+        # return self.get_engineers_balanced(query, entities)
+        return self.get_engineers_basic(query, entities)
     
     def get_metadata_filters_from_entities(self, entities, query_mode=QueryModes.PRECISE):
         metaDataFilter = {}
@@ -81,16 +81,17 @@ class EngineersQuery:
 
         return metaDataFilter
 
-    def get_engineers_basic(self, query: str):
+    def get_engineers_basic(self, query: str, entities):
         if not self.pinecone_index:
             raise 'Pincone index is not available'
         
+        metaDataFilter = self.get_metadata_filters_from_entities(entities, 1)
         vector = self.get_vector_embeddings(query)
         if not vector:
             return {}
         
         try:
-            query_matches = self.pinecone_index.query(vector=vector, top_k=6, include_metadata=True)
+            query_matches = self.pinecone_index.query(vector=vector, top_k=6, filter=metaDataFilter, include_metadata=True)
             return query_matches.to_dict()
         except Exception as e:
             print(f"Error querying Pinecone index: {e}")

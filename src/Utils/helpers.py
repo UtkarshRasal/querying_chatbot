@@ -25,3 +25,7 @@ def amplifyQuery(self, query, keywords, amp_constant=4):
         amplified_keywords = [keyword.upper() * amp_constant for keyword in keywords]
         amplified_query = ' '.join([query] + amplified_keywords)
         return amplified_query
+
+def hasEntity(entities):
+    if len(entities['skills']) > 0 or len(entities['keywords']) > 0 or entities['availability'] or entities['budget']:
+        return True

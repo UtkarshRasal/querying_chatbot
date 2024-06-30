@@ -5,21 +5,26 @@ from src.Utils.tokens import ManageTokens
 from src.Utils.validators import AuthTokenValidator
 
 class Authentication:
+    
     def __init__(self):
         self.client = get_mongo_instance()
         self.users_model = self.client['user']
 
     def register_user(self, username, password, confirm_password):
+    
         try:
+            # check if user already exists in the db
             user = self.users_model.find_one({ 'username': username })
             if user:
                 return HTTPException(status_code=401, detail='User already exists')
-            # else:
+            
+
             if password != confirm_password:
                 return HTTPException(status_code=401, detail='passwords do not match')
             else:
+                # encrypt password before storing in database
                 _password = hashBcrypt(password)
-                print(f"_password - {_password}")
+
                 self.users_model.insert_one({ 'username': username, 'password': _password })
 
 
@@ -29,14 +34,14 @@ class Authentication:
     
     def login_user(self, username, password):
         try:
-            # check krlenge
+            # check if the user exists or not
             user = self.users_model.find_one({ 'username': username })
             if not user:
                 return HTTPException(status_code=400, detail='User not found!')
             
+            
+            hashed_password = user['password']  # encrypted password stored in db
 
-            hashed_password = user['password']
-            # import pdb;pdb.set_trace()
             object_id = str(user['_id'])
             if verifyBcrypt(password, hashed_password):
                 print(f"user - {user}")
